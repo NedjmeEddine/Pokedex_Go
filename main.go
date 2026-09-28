@@ -5,45 +5,42 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/NedjmeEddine/Pokedex_Go/internal/pokeapi"
 )
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
-}
-
-var commands = map[string]cliCommand{
-	"exit": {
-		name:        "exit",
-		description: "Exit the Pokedex",
-		callback:    commandExit,
-	},
+	callback    func(*config) error
 }
 
 func cleanInput(text string) []string {
 	return strings.Fields(strings.ToLower(text))
 }
-func commandExit() error {
-	fmt.Println("Closing the Pokedex... Goodbye!")
-	os.Exit(0)
-	return nil
-}
 
-func main() {
-	scaner := bufio.NewScanner(os.Stdin)
+func REPL(cfg *config) {
+	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Pokedex > ")
-		scaner.Scan()
-		input := scaner.Text()
-		if input == "exit" {
-			commandExit()
-		} else if input == "help" {
-			fmt.Println("Welcome to the Pokedex! Here are the available commands:")
-			fmt.Println("exit - Exit the Pokedex")
-			fmt.Println("help - Show a help message")
+		scanner.Scan()
+		command := cleanInput(scanner.Text())
+		if len(command) == 0 {
+			continue
+		}
+		commandName := command[0]
+		if cmd, ok := commands[commandName]; ok {
+			err := cmd.callback(cfg)
+			if err != nil {
+				fmt.Printf("Error executing command '%s': %v\n", commandName, err)
+			}
 		} else {
 			fmt.Println("Unkown command")
 		}
 	}
+}
+
+func main() {
+	cfg := &config{pokeapiClient: pokeapi.NewClient()}
+	REPL(cfg)
 }
