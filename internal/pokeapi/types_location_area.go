@@ -91,3 +91,33 @@ type PokemonLocation []struct {
 		} `json:"encounter_details"`
 	} `json:"version_details"`
 }
+type Pokemon struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Height int    `json:"height"` // decimetres
+	Weight int    `json:"weight"` // hectograms
+
+	Types []struct {
+		Type struct {
+			Name string `json:"name"`
+		} `json:"type"`
+	} `json:"types"`
+
+	Stats []struct {
+		BaseStat int `json:"base_stat"`
+		Stat     struct {
+			Name string `json:"name"`
+		} `json:"stat"`
+	} `json:"stats"`
+
+	Sprites struct {
+		FrontDefault string `json:"front_default"`
+	} `json:"sprites"`
+
+	Cries struct {
+		Latest string `json:"latest"`
+	} `json:"cries"`
+
+	// URL of a separate endpoint listing the areas where this Pokémon appears
+	LocationAreaEncounters string `json:"location_area_encounters"`
+}

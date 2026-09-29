@@ -17,3 +17,11 @@ func pokemonInLocation(client *pokeapi.Client, pokemonName string, locationAreaN
 	}
 	return false, nil
 }
+func appendPokedex(client *pokeapi.Client, mon string, dex *Pokedex) error {
+	pokemon, err := client.GetPokemon(&mon)
+	if err != nil {
+		return err
+	}
+	dex.pokemons[mon] = *pokemon
+	return nil
+}
