@@ -26,9 +26,19 @@ var commands = map[string]cliCommand{
 	},
 	"map": {
 		name:        "map",
-		description: "Display the map of the Pokedex",
+		description: "Display the next page of the map of the Pokedex",
 		callback:    commandMap,
 	},
+	"mapb": {
+		name:        "mapb",
+		description: "Display the previous page of the map of the Pokedex",
+		callback:    commandMapB,
+	},
+	/*"explore":{
+		name:        "explore",
+		description: "fetch the pokemons in a given location area",
+		callback:    commandExplore,
+	},*/
 }
 
 func commandExit(cfg *config) error {
@@ -55,3 +65,26 @@ func commandMap(cfg *config) error {
 	cfg.previousPageURL = res.Previous
 	return nil
 }
+func commandMapB(cfg *config) error {
+	if cfg.previousPageURL == nil {
+		fmt.Println("No previous page available.")
+		return nil
+	}
+	res, err := cfg.pokeapiClient.GetLocationAreas(cfg.previousPageURL)
+	if err != nil {
+		fmt.Printf("Error fetching location areas: %v\n", err)
+		return err
+	}
+	for _, locationArea := range res.Results {
+		fmt.Printf("%s\n", locationArea.Name)
+	}
+	cfg.nextPageURL = res.Next
+	cfg.previousPageURL = res.Previous
+	return nil
+}
+
+/*func commandExplore(cfg *config) error {
+	locationName:=os.Args[2]
+	fmt.Printf("Exploring location area: %s\n", locationName)
+	res, err := cfg.pokeapiClient.GetLocationAreaDetails(locationName)
+}*/
