@@ -87,3 +87,42 @@ func (c *Client) GetArea(area *string) (*Area, error) {
 	c.cache.Add(requestURL, dat)
 	return &Area, nil
 }
+
+func (c *Client) GetPokemonArea(pokemon *string) (*PokemonLocation, error) {
+	requestURL := baseURL + "pokemon/" + *pokemon + "/encounters"
+	//cache
+	data, ok := c.cache.Get(requestURL)
+	if ok {
+		fmt.Println("Cache hit for URL:", requestURL)
+		var PokemonLocation PokemonLocation
+		err := json.Unmarshal(data, &PokemonLocation)
+		if err != nil {
+			return nil, err
+		}
+		return &PokemonLocation, nil
+	}
+	fmt.Println("Cache miss for URL:", requestURL)
+	req, err := http.NewRequest("GET", requestURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	}
+	dat, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	var PokemonLocation PokemonLocation
+	err = json.Unmarshal(dat, &PokemonLocation)
+	if err != nil {
+		return nil, err
+	}
+	c.cache.Add(requestURL, dat)
+	return &PokemonLocation, nil
+}

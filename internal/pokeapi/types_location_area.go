@@ -63,3 +63,31 @@ type Area struct {
 		} `json:"version_details"`
 	} `json:"pokemon_encounters"`
 }
+
+type PokemonLocation []struct {
+	LocationArea struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"location_area"`
+	VersionDetails []struct {
+		Version struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"version"`
+		MaxChance        int `json:"max_chance"`
+		EncounterDetails []struct {
+			MinLevel int `json:"min_level"`
+			MaxLevel int `json:"max_level"`
+			Chance   int `json:"chance"`
+			Method   struct {
+				Name string `json:"name"`
+				URL  string `json:"url"`
+			} `json:"method"`
+			ConditionValues []struct {
+				Name string `json:"name"`
+				URL  string `json:"url"`
+			} `json:"condition_values"`
+			PokemonDetails any `json:"pokemon_details"`
+		} `json:"encounter_details"`
+	} `json:"version_details"`
+}

@@ -40,6 +40,11 @@ var commands = map[string]cliCommand{
 		description: "fetch the pokemons in a given location area",
 		callback:    commandExplore,
 	},
+	"catch": {
+		name:        "catch",
+		description: "catch a pokemon in the current location area",
+		callback:    commandCatch,
+	},
 }
 
 func commandExit(cfg *config, args []string) error {
@@ -100,6 +105,28 @@ func commandExplore(cfg *config, args []string) error {
 	fmt.Println("Found Pokemon:")
 	for _, encounter := range res.PokemonEncounters {
 		fmt.Printf("- %s\n", encounter.Pokemon.Name)
+	}
+	return nil
+}
+func commandCatch(cfg *config, args []string) error {
+	if cfg.currentLocation == "" {
+		fmt.Println("You need to explore a location area first using the 'explore' command.")
+		return nil
+	}
+	if len(args) < 1 {
+		fmt.Println("Please provide a Pokemon name to catch.")
+		return nil
+	}
+	pokemonName := args[0]
+	if isPkmnIn, err := pokemonInLocation(&cfg.pokeapiClient, pokemonName, cfg.currentLocation); err != nil {
+		fmt.Printf("Error checking if Pokemon is in location: %v\n", err)
+		return err
+	} else if !isPkmnIn {
+		fmt.Printf("%s is not found in %s.\n", pokemonName, cfg.currentLocation)
+		return nil
+	} else {
+		fmt.Printf("Throwing a Pokeball at %s in %s...\n", pokemonName, cfg.currentLocation)
+		fmt.Printf("Congratulations! You caught %s!\n", pokemonName)
 	}
 	return nil
 }
