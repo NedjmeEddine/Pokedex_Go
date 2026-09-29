@@ -12,7 +12,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, []string) error
 }
 
 func cleanInput(text string) []string {
@@ -29,8 +29,9 @@ func REPL(cfg *config) {
 			continue
 		}
 		commandName := command[0]
+		args := command[1:]
 		if cmd, ok := commands[commandName]; ok {
-			err := cmd.callback(cfg)
+			err := cmd.callback(cfg, args)
 			if err != nil {
 				fmt.Printf("Error executing command '%s': %v\n", commandName, err)
 			}

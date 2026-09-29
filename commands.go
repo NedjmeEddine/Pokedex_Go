@@ -11,6 +11,7 @@ type config struct {
 	pokeapiClient   pokeapi.Client
 	nextPageURL     *string
 	previousPageURL *string
+	currentLocation string
 }
 
 var commands = map[string]cliCommand{
@@ -34,25 +35,25 @@ var commands = map[string]cliCommand{
 		description: "Display the previous page of the map of the Pokedex",
 		callback:    commandMapB,
 	},
-	/*"explore":{
+	"explore": {
 		name:        "explore",
 		description: "fetch the pokemons in a given location area",
 		callback:    commandExplore,
-	},*/
+	},
 }
 
-func commandExit(cfg *config) error {
+func commandExit(cfg *config, args []string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
-func commandHelp(cfg *config) error {
+func commandHelp(cfg *config, args []string) error {
 	fmt.Println("Welcome to the Pokedex! Here are the available commands:")
 	println("  help - Display this help message")
 	println("  exit - Exit the Pokedex")
 	return nil
 }
-func commandMap(cfg *config) error {
+func commandMap(cfg *config, args []string) error {
 	res, err := cfg.pokeapiClient.GetLocationAreas(cfg.nextPageURL)
 	if err != nil {
 		fmt.Printf("Error fetching location areas: %v\n", err)
@@ -65,7 +66,7 @@ func commandMap(cfg *config) error {
 	cfg.previousPageURL = res.Previous
 	return nil
 }
-func commandMapB(cfg *config) error {
+func commandMapB(cfg *config, args []string) error {
 	if cfg.previousPageURL == nil {
 		fmt.Println("No previous page available.")
 		return nil
@@ -83,8 +84,22 @@ func commandMapB(cfg *config) error {
 	return nil
 }
 
-/*func commandExplore(cfg *config) error {
-	locationName:=os.Args[2]
+func commandExplore(cfg *config, args []string) error {
+	if len(args) < 1 {
+		fmt.Println("Please provide a location area name.")
+		return nil
+	}
+	locationName := args[0]
 	fmt.Printf("Exploring location area: %s\n", locationName)
-	res, err := cfg.pokeapiClient.GetLocationAreaDetails(locationName)
-}*/
+	res, err := cfg.pokeapiClient.GetArea(&locationName)
+	if err != nil {
+		fmt.Printf("Error fetching area: %v\n", err)
+		return err
+	}
+	cfg.currentLocation = locationName
+	fmt.Println("Found Pokemon:")
+	for _, encounter := range res.PokemonEncounters {
+		fmt.Printf("- %s\n", encounter.Pokemon.Name)
+	}
+	return nil
+}
