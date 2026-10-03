@@ -15,7 +15,6 @@ func (c *Client) GetLocationAreas(url *string) (*LocationAreasRes, error) {
 	//cache
 	data, ok := c.cache.Get(requestURL)
 	if ok {
-		fmt.Println("Cache hit for URL:", requestURL)
 		var locationareasRes LocationAreasRes
 		err := json.Unmarshal(data, &locationareasRes)
 		if err != nil {
@@ -23,7 +22,6 @@ func (c *Client) GetLocationAreas(url *string) (*LocationAreasRes, error) {
 		}
 		return &locationareasRes, nil
 	}
-	fmt.Println("Cache miss for URL:", requestURL)
 	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
 		return nil, err
@@ -54,7 +52,6 @@ func (c *Client) GetArea(area *string) (*Area, error) {
 	//cache
 	data, ok := c.cache.Get(requestURL)
 	if ok {
-		fmt.Println("Cache hit for URL:", requestURL)
 		var Area Area
 		err := json.Unmarshal(data, &Area)
 		if err != nil {
@@ -62,7 +59,6 @@ func (c *Client) GetArea(area *string) (*Area, error) {
 		}
 		return &Area, nil
 	}
-	fmt.Println("Cache miss for URL:", requestURL)
 	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
 		return nil, err
@@ -93,7 +89,6 @@ func (c *Client) GetPokemonArea(pokemon *string) (*PokemonLocation, error) {
 	//cache
 	data, ok := c.cache.Get(requestURL)
 	if ok {
-		fmt.Println("Cache hit for URL:", requestURL)
 		var PokemonLocation PokemonLocation
 		err := json.Unmarshal(data, &PokemonLocation)
 		if err != nil {
@@ -101,7 +96,6 @@ func (c *Client) GetPokemonArea(pokemon *string) (*PokemonLocation, error) {
 		}
 		return &PokemonLocation, nil
 	}
-	fmt.Println("Cache miss for URL:", requestURL)
 	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
 		return nil, err
@@ -132,7 +126,6 @@ func (c *Client) GetPokemon(pokemon *string) (*Pokemon, error) {
 	//cache
 	data, ok := c.cache.Get(requestURL)
 	if ok {
-		fmt.Println("Cache hit for URL:", requestURL)
 		var Pokemon Pokemon
 		err := json.Unmarshal(data, &Pokemon)
 		if err != nil {
@@ -140,7 +133,6 @@ func (c *Client) GetPokemon(pokemon *string) (*Pokemon, error) {
 		}
 		return &Pokemon, nil
 	}
-	fmt.Println("Cache miss for URL:", requestURL)
 	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
 		return nil, err

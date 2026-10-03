@@ -12,7 +12,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, []string) error
 }
 type Pokedex struct {
 	pokemons map[string]pokeapi.Pokemon
@@ -32,8 +32,10 @@ func REPL(cfg *config) {
 			continue
 		}
 		commandName := command[0]
+
 		if cmd, ok := commands[commandName]; ok {
-			err := cmd.callback(cfg)
+			commandArgs := command[1:]
+			err := cmd.callback(cfg, commandArgs)
 			if err != nil {
 				fmt.Printf("Error executing command '%s': %v\n", commandName, err)
 			}
@@ -44,6 +46,7 @@ func REPL(cfg *config) {
 }
 
 func main() {
-	cfg := &config{pokeapiClient: pokeapi.NewClient()}
+	cfg := &config{pokeapiClient: pokeapi.NewClient(),
+		pokedex: Pokedex{pokemons: make(map[string]pokeapi.Pokemon)}}
 	REPL(cfg)
 }
